@@ -7,9 +7,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const Skills = () => {
-  const skillsRef = useRef(null);
-  const titleRef = useRef(null);
-  const skillsGridRef = useRef(null);
+  const skillsRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const skillsGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -30,25 +30,28 @@ const Skills = () => {
         }
       );
 
-      gsap.fromTo(
-        skillsGridRef.current?.children,
-        { y: 30, opacity: 0, scale: 0.9 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          delay: 0.3,
-          ease: "power2.out",
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: skillsRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
+      // Fix for the children property error
+      if (skillsGridRef.current) {
+        gsap.fromTo(
+          Array.from(skillsGridRef.current.children),
+          { y: 30, opacity: 0, scale: 0.9 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            delay: 0.3,
+            ease: "power2.out",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: skillsRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
     });
 
     return () => ctx.revert();

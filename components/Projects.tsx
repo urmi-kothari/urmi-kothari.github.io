@@ -8,9 +8,9 @@ import { ExternalLink, Github, Code } from "lucide-react";
 gsap.registerPlugin(ScrollTrigger);
 
 const Projects = () => {
-  const projectsRef = useRef(null);
-  const titleRef = useRef(null);
-  const projectsGridRef = useRef(null);
+  const projectsRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const projectsGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -31,25 +31,28 @@ const Projects = () => {
         }
       );
 
-      gsap.fromTo(
-        projectsGridRef.current?.children,
-        { y: 30, opacity: 0, scale: 0.9 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          delay: 0.3,
-          ease: "power2.out",
-          stagger: 0.2,
-          scrollTrigger: {
-            trigger: projectsRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
+      // Fix for the children property error
+      if (projectsGridRef.current) {
+        gsap.fromTo(
+          Array.from(projectsGridRef.current.children),
+          { y: 30, opacity: 0, scale: 0.9 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            delay: 0.3,
+            ease: "power2.out",
+            stagger: 0.2,
+            scrollTrigger: {
+              trigger: projectsRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
     });
 
     return () => ctx.revert();
