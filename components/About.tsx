@@ -8,10 +8,10 @@ import { Award, Code, Database, Globe } from "lucide-react";
 gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
-  const aboutRef = useRef(null);
-  const titleRef = useRef(null);
-  const contentRef = useRef(null);
-  const statsRef = useRef(null);
+  const aboutRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -50,24 +50,27 @@ const About = () => {
         }
       );
 
-      gsap.fromTo(
-        statsRef.current?.children,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          delay: 0.5,
-          ease: "power2.out",
-          stagger: 0.2,
-          scrollTrigger: {
-            trigger: aboutRef.current,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
+      // Fix for the children property error
+      if (statsRef.current) {
+        gsap.fromTo(
+          Array.from(statsRef.current.children),
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            delay: 0.5,
+            ease: "power2.out",
+            stagger: 0.2,
+            scrollTrigger: {
+              trigger: aboutRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
     });
 
     return () => ctx.revert();
