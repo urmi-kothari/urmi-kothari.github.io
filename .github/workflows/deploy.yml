@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -6,13 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-production:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -20,11 +21,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
         
+      - name: Configure Next.js for static export
+        run: |
+          # Ensure output: 'export' is uncommented in next.config.js
+          sed -i 's/\/\/ output: .export./output: "export"/' next.config.js
+          cat next.config.js
+          
       - name: Build application
         run: npm run build
         
-      - name: Deploy
+      - name: Add .nojekyll file
+        run: |
+          touch out/.nojekyll
+          
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy to GitHub Pages'
